@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 
     int outputlength = strlen(output);
 
-    /* Validations:
+    /* Args validations:
         1. output file length and .txt suffix
         2. k is integer bigger than 0
         3. max itter is bigger than 0, if exists
