@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+void initialize_centroids(int k, char *input_file); //Reads the first k lines in the input file and creates k centroids out of it
+
 
 int main(int argc, char **argv)
 {
@@ -37,11 +39,19 @@ int main(int argc, char **argv)
         printf("Invalid Input! 2");
         return 1;
     }
-
     int checkOutput = strcmp(output+outputlength-4, ".txt");
     printf("%d", checkOutput);
 
+
+
+
+
     return 0;
+}
+
+
+void initialize_centroids() {
+
 }
 
 
