@@ -1,15 +1,19 @@
 import sys
 
 class Env:
+    """ Class for global variables used in the system """
     k = "k"
     input_file = "input_file"
     output_file = "output_file"
     maxiter = "maxiter"
     valid_output_format = ".txt"
 
-
-
 class Centroid:
+    """
+        Class represents a centroid of k-means algorithm 
+        A cenroid is represented by the sum of all vectors assigned to the centroid
+        and the number of vectors as count
+    """
     def __init__(self, vector: float = None):
         if vector is None:
             self.vec_sum = []
@@ -51,9 +55,6 @@ class Centroid:
         return maxd
     
 
-
-
-
 def main() -> int:
     try:
         args = load_args()
@@ -83,14 +84,8 @@ def main() -> int:
     
     write_output(args[Env.output_file], new_centroids)
             
-        
-
-
-    
-
 def create_vector_from_line(line: str):
     return [float(x) for x in line.split(',')]
-
 
 
 #TODO: if k > n?
@@ -165,7 +160,6 @@ def load_args():
     return args
 
 
-
 def get_closest(centroids: list[Centroid], x: list[float]) -> int:
     
     minimal_distance = float('inf')
@@ -180,7 +174,6 @@ def get_closest(centroids: list[Centroid], x: list[float]) -> int:
     return minimal_index
 
     
-
 def kmeans_iteration(centroids: list[list[float]], input_name: str) -> list[list[float]]:
     new_centroids = [Centroid() for i in range(len(centroids))]
     
@@ -200,7 +193,6 @@ def kmeans_iteration(centroids: list[list[float]], input_name: str) -> list[list
             f.close()
 
     return new_centroids
-
 
 
 def write_output(output_name, centroids):
@@ -223,6 +215,4 @@ def write_output(output_name, centroids):
     finally:
         f.close()
 
-
 main()
-
