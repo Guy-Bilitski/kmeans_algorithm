@@ -6,7 +6,6 @@ class Env:
     input_file = "input_file"
     output_file = "output_file"
     maxiter = "maxiter"
-    valid_output_format = ".txt"
 
 class Centroid:
     """
@@ -143,8 +142,6 @@ def load_args():
             raise
 
         args[Env.output_file] = inp[-1]
-        if inp[-1][-4:] != Env.valid_output_format:
-            raise
         args[Env.input_file] = inp[-2]
 
         if len(inp) == 5: #Checking maxiter exists
