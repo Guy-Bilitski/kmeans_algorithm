@@ -22,29 +22,26 @@ int main(int argc, char **argv)
         output = argv[4];
     }
     else {
-        printf("Invalid Input!");
+        printf("Invalid Input! 1");
         return 1;
     }
 
-    int outlength = strlen(output);
+    int outputlength = strlen(output);
 
-    if (outlength < 4 || k <= 0 || (argc==5 && maxiter<=0) ){
-        printf("Invalid Input!");
+    /* Validations:
+        1. output file length and .txt suffix
+        2. k is integer bigger than 0
+        3. max itter is bigger than 0, if exists
+    */
+    if (outputlength < 4 || k <= 0 || (argc==5 && maxiter<=0) ){
+        printf("Invalid Input! 2");
         return 1;
     }
 
-    
-    int checkOutput = strcmp(output+outlength-4, ".txt");
+    int checkOutput = strcmp(output+outputlength-4, ".txt");
     printf("%d", checkOutput);
 
-
-
-    
     return 0;
 }
 
 
-int checkOutput(char *out){
-    
-
-}
