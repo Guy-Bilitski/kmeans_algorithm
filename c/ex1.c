@@ -4,12 +4,13 @@
 #include <string.h>
 
 void initialize_centroids(int k, char *input_file); //Reads the first k lines in the input file and creates k centroids out of it
+int get_dimension(char *input_file);
 
 
 int main(int argc, char **argv)
 {
     char *output, *input;
-    int k, maxiter;
+    int k, maxiter, dim;
 
     if (argc == 4){
         k = atoi(argv[1]);
@@ -28,19 +29,22 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    int outputlength = strlen(output);
-
     /* Args validations:
-        1. output file length and .txt suffix
-        2. k is integer bigger than 0
-        3. max itter is bigger than 0, if exists
+        1. k is integer bigger than 0
+        2. max itter is bigger than 0, if exists
     */
-    if (outputlength < 4 || k <= 0 || (argc==5 && maxiter<=0) ){
+    if ( k <= 0 || (argc==5 && maxiter<=0) ){
         printf("Invalid Input! 2");
         return 1;
     }
-    int checkOutput = strcmp(output+outputlength-4, ".txt");
-    printf("%d", checkOutput);
+
+    dim = get_dimension(input);
+    if (dim == -1){
+        printf("An Error Has Occurred");
+    }
+
+    
+
 
 
 
@@ -50,8 +54,29 @@ int main(int argc, char **argv)
 }
 
 
-void initialize_centroids() {
-
+void initialize_centroids(int k, char *input_file) {
+    return;
 }
 
 
+
+int get_dimension(char *input_file){
+    char c;
+    FILE *ifp;
+    int d=1;
+    ifp = fopen(*input_file, "r");
+    while ((c = fgetc(ifp)) != EOF){
+        if (c == ','){
+            d += 1;
+        } else if (c == '\n')
+        {
+            break;
+        }
+    }
+    fclose(ifp);
+
+    if (c == EOF){  //ERROR in read char
+        return -1;
+    }
+    return d;
+}
