@@ -19,7 +19,7 @@ int write_result(int k, int dim, char *outname, double **data);
 int main(int argc, char **argv)
 {
     char *output_filename, *input_filename;
-    int k, maxiter, dim, error;
+    int k, maxiter, dim, initialize_error, error;
     double **centroids, **new_centroids, **temp;
 
     k = atoi(argv[1]);
@@ -43,9 +43,12 @@ int main(int argc, char **argv)
         centroids[i] = calloc(dim + 1, sizeof(double));
         new_centroids[i] = calloc(dim + 1, sizeof(double));
     }
-
-    if (initialize_centroids(k, dim, input_filename, centroids)){
+    initialize_error = initialize_centroids(k, dim, input_filename, centroids);
+    if (initialize_error == 1){
         printf("An Error Has Occurred");
+        return 1;
+    } else if (initialize_error == 2){
+        printf("Invalid Input!");
         return 1;
     }
 
@@ -109,14 +112,9 @@ int kmeans_iteration(int k, int dim, char *input_file, double **centroids, doubl
     }
 
     while (!feof(ifp)) {
-        int j=0;
-        for (; j < dim; j++) {
+        for (int j=0; j < dim; j++) {
             end = fscanf(ifp, "%lf%c", &vector[j], &c);
         }
-        if (j < dim){
-            return 1;
-        }
-
         if (end != 2){
             break;
         }
@@ -168,6 +166,30 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
             fscanf(ifp, "%lf%c", &datapoints[i][j],&c);
         }
         datapoints[i][dim] = 1;
+    }
+
+    rewind(ifp);
+    float check;
+    int fsc;
+    for (int i = 0; i < INT_MAX; i++) {
+        
+        for (int j = 0; j < dim; j++) {
+            fsc = fscanf(ifp, "%lf%c", &check,&c);
+            if (fsc < 2){
+                break;
+            }
+            if (j < dim-1 && c != ','){
+                fclose(ifp);
+                return 2;
+            }
+            else if (j == dim-1 && c != '\n'){
+                fclose(ifp);
+                return 2;
+            }
+        }
+        if (fsc < 2){
+            break;
+        }
     }
 
     fclose(ifp);

@@ -87,7 +87,6 @@ def create_vector_from_line(line: str):
     return [float(x) for x in line.split(',')]
 
 
-#TODO: if k > n?
 def initialize_centroids(k: int, input_name: str):
     try:
         f = open(input_name, mode="r")
@@ -106,11 +105,11 @@ def initialize_centroids(k: int, input_name: str):
         try:
             centroid = Centroid(create_vector_from_line(line))
         except:
-            raise Exception("Invalid Input! 47")
+            raise Exception("Invalid Input!")
         
         #Validating all centroids are of same length
         if len(centroids)>0 and len(centroid) != len(centroids[0]):
-            raise Exception("Invalid Input! 51")
+            raise Exception("Invalid Input!")
         
         centroids.append(centroid)
     
@@ -121,13 +120,10 @@ def initialize_centroids(k: int, input_name: str):
                 if len(vector) != len(centroids[0]):
                     raise
             except:
-                raise Exception("Invalid Input! 96")
+                raise Exception("Invalid Input!")
 
 
     f.close()
-    #Validating we gathered k centroids
-    if len(centroids) < k:
-        raise Exception("Unknown behavior") #TODO: which exp to raise
     return centroids
     
 
@@ -135,7 +131,7 @@ def load_args():
     inp = sys.argv
     args = {}
     if len(inp) < 4:
-        raise Exception("Invalid Input!", "len<4")
+        raise Exception("Invalid Input!")
     try:
         args[Env.k] = int(inp[1])
         if args[Env.k] < 1:
@@ -151,8 +147,8 @@ def load_args():
             else:
                 args[Env.maxiter] = maxiter #If exists, added to args.
         
-    except Exception as ex:
-        raise Exception("Invalid Input!", ex) #TODO: delete ex
+    except Exception:
+        raise Exception("Invalid Input!")
     
     return args
 
@@ -185,7 +181,7 @@ def kmeans_iteration(centroids: list[list[float]], input_name: str) -> list[list
             closest_index = get_closest(centroids, xi)
             new_centroids[closest_index].add_vector(xi)
     except:
-            raise Exception("Invalid Input! 160")
+            raise Exception("An Error Has Occurred")
     finally:
             f.close()
 
