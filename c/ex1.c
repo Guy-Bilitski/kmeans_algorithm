@@ -4,10 +4,14 @@
 #include <string.h>
 #include <float.h>
 #include <math.h>
+#include <limits.h>
 
-double **initialize_centroids(int k, int dim, char *input_file); //Reads the first k lines in the input file and creates k centroids out of it
+void initialize_centroids(int k, int dim, char *input_file, double**); //Reads the first k lines in the input file and creates k centroids out of it
 int get_dimension(char *input_file); // returns the dimention d of all vectors
 void add_two_vectors(float *vec1, float *vec2); // adding vec2 to vec1
+double max_distance_between_centroids(int k, int dim, double **old_centroids, double **new_centroids);
+void kmeans_iteration(int k, int dim, char *input_file, double **centroids, double **new_centroids);
+int find_closest_centroid(int k, int dim, double *vector, double **centroids);
 
 
 int main(int argc, char **argv)
@@ -39,28 +43,34 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    centroids = initialize_centroids(k, dim, input_filename);
+    centroids = calloc(k, sizeof(double *));
+    new_centroids = calloc(k, sizeof(double *));
+    for (int i=0; i < k; i++) {
+        centroids[i] = calloc(dim + 1, sizeof(double));
+        new_centroids = calloc(k, sizeof(double *));
+    }
+
+    initialize_centroids(k, dim, input_filename, centroids);
 
     for (int i=0; i < maxiter; i++) {
-        new_centroids = kmeans_iteration(k, dim, input_filename, centroids);
+        kmeans_iteration(k, dim, input_filename, centroids, new_centroids);
         if (max_distance_between_centroids(k, dim, centroids, new_centroids) < 0.001) {
             break;
         }
+        double ** temp = centroids;
+        centroids = new_centroids;
+        new_centroids = temp;
     }
-
-    centroids = new_centroids;
 
     for (int i = 0; i < k; i++) {
         
         for (int j = 0; j < dim; j++) {
-            printf("%lf,", &datapoints[i][j]);
+            printf("%lf,", new_centroids[i][j]/new_centroids[i][dim]);
         }
-
-        datapoints[0][dim] = 1;
-
+        printf("\n");
     }
-
-
+    free(centroids);
+    free(new_centroids);
 
     return 0;
 }
@@ -84,21 +94,25 @@ double max_distance_between_centroids(int k, int dim, double **old_centroids, do
 }
 
 
-double **kmeans_iteration(int k, int dim, char *input_file, double **centroids) {
+void kmeans_iteration(int k, int dim, char *input_file, double **centroids, double **new_centroids) {
     FILE *ifp;
-    double **new_centroids;
+    // double **new_centroids;
     int closet_centroid_index;
-    new_centroids = calloc(k, sizeof(double *));
-    for (int i=0; i < k; i++) {
-        new_centroids[i] = calloc(dim + 1, sizeof(double));
-    }
+    // new_centroids = calloc(k, sizeof(double *));
+    // for (int i=0; i < k; i++) {
+    //     new_centroids[i] = calloc(dim + 1, sizeof(double));
+    // }
     double *vector;
     vector = calloc(dim, sizeof(double));
+
+    for (int i=0; i<k; i++){
+        new_centroids[i][dim] = 0;
+    }
 
     ifp = fopen(input_file, "r");
     if (ifp == NULL) {
         printf("An Error Has Occurred");
-        return NULL;
+        return;
     }
 
     while (!feof(ifp)) {
@@ -136,17 +150,17 @@ int find_closest_centroid(int k, int dim, double *vector, double **centroids) {
 }
 
 
-double **initialize_centroids(int k, int dim, char *input_file) {
+void initialize_centroids(int k, int dim, char *input_file, double **datapoints) {
     FILE *ifp;
-    double **datapoints;
-    datapoints = calloc(k, sizeof(double *));
-    for (int i=0; i < k; i++) {
-        datapoints[i] = calloc(dim + 1, sizeof(double));
-    }
+    // double **datapoints;
+    // datapoints = calloc(k, sizeof(double *));
+    // for (int i=0; i < k; i++) {
+    //     datapoints[i] = calloc(dim + 1, sizeof(double));
+    // }
     ifp = fopen(input_file, "r");
     if (ifp == NULL) {
         printf("An Error Has Occurred");
-        return NULL;
+        return;
     }
 
     for (int i = 0; i < k; i++) {
@@ -159,7 +173,7 @@ double **initialize_centroids(int k, int dim, char *input_file) {
     }
 
     fclose(ifp);
-    return datapoints;
+    return;
 }
 
 int get_dimension(char *input_file) {
