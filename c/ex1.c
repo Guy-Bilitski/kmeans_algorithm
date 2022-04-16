@@ -2,18 +2,15 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
+#include <math.h>
 
 double **initialize_centroids(int k, int dim, char *input_file); //Reads the first k lines in the input file and creates k centroids out of it
 int get_dimension(char *input_file); // returns the dimention d of all vectors
-// void add_vec_to_centroid(struct Centroid centroid, int *vector); // Adding a vector to a centroid
 void add_two_vectors(float *vec1, float *vec2); // adding vec2 to vec1
 
 
 
-// void add_vec_to_centroid(struct Centroid centroid, int *vector) {
-//     add_two_vectors(centroid.vec_sum, vector);
-//     centroid.count ++; 
-// };
 
 void add_two_vectors(float *vec1, float *vec2) {
     for (int i=0; i < sizeof(vec1); i++) {
@@ -26,7 +23,7 @@ int main(int argc, char **argv)
 {
     char *output_filename, *input_filename;
     int k, maxiter, dim;
-    struct Centriod *centroids;
+    double **centroids;
 
     if (argc == 4){
         k = atoi(argv[1]);
@@ -60,14 +57,30 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // centroids = malloc(k * sizeof(struct Centriod));
-
-    initialize_centroids(k, dim, input_filename);
-    // printf("hi!");
+    centroids = initialize_centroids(k, dim, input_filename);
 
     
 
     return 0;
+}
+
+int find_closest_centroid(int k, int dim, double *vector, double **centroids) {
+    double closest_value = DBL_MAX;
+    double current_value = 0;
+    int closest_index = -1;
+
+    for (int i = 0; i < k; i++) {
+        current_value = 0;
+        for (int j=0; j < dim; j++) {
+            current_value += pow((vector[j] - (centroids[i][j] / centroids[i][k])), 2);
+        }
+        if (current_value < closest_value) {
+            closest_value = current_value;
+            closest_index = i;
+        }
+    }
+
+    return closest_index;
 }
 
 
@@ -86,14 +99,14 @@ double **initialize_centroids(int k, int dim, char *input_file) {
     }
 
     for (int i = 0; i < k; i++) {
-        datapoints[0][i] = 1;
-        for (int j = 1; j < dim+1; j++) {
-            fscanf(ifp, "%lf,", &datapoints[i][j]);
-            printf("%lf", datapoints[i][j]);
-            printf("\t");
-        }
-
         
+        for (int j = 0; j < dim; j++) {
+            fscanf(ifp, "%lf,", &datapoints[i][j]);
+            // printf("%lf", datapoints[i][j]);
+            // printf("\t");
+        }
+        datapoints[0][dim] = 1;
+
     }
 
     // Now we need to read k first rows and insert all values as centroids to the given array
