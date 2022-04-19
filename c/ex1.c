@@ -15,6 +15,7 @@ int find_closest_centroid(int k, int dim, double *vector, double **centroids);
 void initarray(int dim, int k, double **arr);
 int write_result(int k, int dim, char *outname, double **data);
 int checkForZeros(int k, int dim, double **centroids);
+void printcentroids(int k, int d, double **c);
 
 
 int main(int argc, char **argv)
@@ -60,17 +61,16 @@ int main(int argc, char **argv)
             return 1;
         }
         double maxd = max_distance_between_centroids(k, dim, centroids, new_centroids);
+        temp = &centroids[0];
+        centroids = &new_centroids[0];
+        new_centroids = &temp[0];
         if (maxd < 0.001) {
             break;
         }
-        
-        temp = centroids;
-        centroids = new_centroids;
-        new_centroids = temp;
         initarray(dim, k, new_centroids);
     }
 
-    write_result(k, dim, output_filename, new_centroids);
+    write_result(k, dim, output_filename, centroids);
     
     for (int i=0; i < k; i++) {
         free(centroids[i]);
@@ -179,7 +179,7 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
     }
 
     rewind(ifp);
-    float check;
+    double check;
     int fsc;
     for (int i = k; i < INT_MAX; i++) {
         
@@ -257,4 +257,13 @@ int write_result(int k, int dim, char *outname, double **data){
     }
     fclose(ofp);
     return 0;
+}
+
+void printcentroids(int k, int d, double **c){
+    for (int i=0; i<k; i++){
+        for (int j=0; j<d; j++){
+            printf("%.4f,", c[i][j]);
+        }
+        printf(" numOfVecs=%.4f\n", c[i][d]);
+    }
 }

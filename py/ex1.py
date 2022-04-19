@@ -142,7 +142,7 @@ def load_args():
 
         if len(inp) == 5: #Checking maxiter exists
             maxiter = int(inp[2])
-            if maxiter < 0: #Validating maxiter value
+            if maxiter <= 0: #Validating maxiter value
                 raise
             else:
                 args[Env.maxiter] = maxiter #If exists, added to args.
