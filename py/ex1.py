@@ -79,7 +79,7 @@ def main() -> int:
             break
         else:
             centroids = new_centroids
-    
+            i+=1
     
     write_output(args[Env.output_file], new_centroids)
             
@@ -207,5 +207,13 @@ def write_output(output_name, centroids):
         raise Exception("An Error Has Occurred")
     finally:
         f.close()
+
+def checkForZeros(centroids: list[Centroid]) -> bool:
+    for c in centroids:
+        if c.count == 0:
+            return True
+    return False
+
+
 
 main()

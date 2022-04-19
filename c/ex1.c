@@ -5,7 +5,7 @@
 #include <float.h>
 #include <math.h>
 #include <limits.h>
-
+#include <ctype.h>
 
 int initialize_centroids(int k, int dim, char *input_file, double**); //Reads the first k lines in the input file and creates k centroids out of it
 int get_dimension(char *input_file); // returns the dimention d of all vectors
@@ -14,6 +14,7 @@ int kmeans_iteration(int k, int dim, char *input_file, double **centroids, doubl
 int find_closest_centroid(int k, int dim, double *vector, double **centroids);
 void initarray(int dim, int k, double **arr);
 int write_result(int k, int dim, char *outname, double **data);
+int checkForZeros(int k, int dim, double **centroids);
 
 
 int main(int argc, char **argv)
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
 
     for (int i=0; i < maxiter; i++) {
         error = kmeans_iteration(k, dim, input_filename, centroids, new_centroids);
-        if (error){
+        if (error || checkForZeros(k, dim, new_centroids)){
             printf("An Error Has Occurred");
             return 1;
         }
@@ -132,6 +133,15 @@ int kmeans_iteration(int k, int dim, char *input_file, double **centroids, doubl
     return 0;
 }
 
+int checkForZeros(int k, int dim, double **centroids){
+    for (int i = 0; i < k; i++) {
+        if (centroids[i][dim] == 0){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 int find_closest_centroid(int k, int dim, double *vector, double **centroids) {
     double closest_value = DBL_MAX;
     double current_value = 0;
@@ -171,7 +181,7 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
     rewind(ifp);
     float check;
     int fsc;
-    for (int i = 0; i < INT_MAX; i++) {
+    for (int i = k; i < INT_MAX; i++) {
         
         for (int j = 0; j < dim; j++) {
             fsc = fscanf(ifp, "%lf%c", &check,&c);
@@ -182,7 +192,7 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
                 fclose(ifp);
                 return 2;
             }
-            else if (j == dim-1 && c != '\n'){
+            else if (j == dim-1 && !isspace(c)){
                 fclose(ifp);
                 return 2;
             }
