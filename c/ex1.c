@@ -72,7 +72,11 @@ int main(int argc, char **argv)
         initarray(dim, k, new_centroids);
     }
 
-    write_result(k, dim, output_filename, centroids);
+    error = write_result(k, dim, output_filename, centroids);
+    if (error){
+        printf("An Error Has Occurred");
+        return 1;
+    }
     
     for (i=0; i < k; i++) {
         free(centroids[i]);
@@ -252,7 +256,7 @@ int write_result(int k, int dim, char *outname, double **data){
     int i,j;
     ofp = fopen(outname, "w");
     if (ofp == NULL) {
-        return -1;
+        return 1;
     }
     for (i = 0; i<k; i++){
         for (j=0; j<dim; j++){
