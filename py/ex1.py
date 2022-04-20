@@ -32,7 +32,7 @@ class Centroid:
     def __getitem__(self, i: int) -> float:
         return self.vec_sum[i]/self.count
 
-    def add_vector(self, vector: list[float]):
+    def add_vector(self, vector: list):
         if self.count == 0:
             self.vec_sum = vector
         else:
@@ -153,7 +153,7 @@ def load_args():
     return args
 
 
-def get_closest(centroids: list[Centroid], x: list[float]) -> int:
+def get_closest(centroids: list, x: list) -> int:
     
     minimal_distance = float('inf')
     minimal_index = -1
@@ -167,7 +167,7 @@ def get_closest(centroids: list[Centroid], x: list[float]) -> int:
     return minimal_index
 
     
-def kmeans_iteration(centroids: list[list[float]], input_name: str) -> list[list[float]]:
+def kmeans_iteration(centroids: list, input_name: str) -> list:
     new_centroids = [Centroid() for i in range(len(centroids))]
     
     try:
@@ -208,7 +208,7 @@ def write_output(output_name, centroids):
     finally:
         f.close()
 
-def checkForZeros(centroids: list[Centroid]) -> bool:
+def checkForZeros(centroids: list) -> bool:
     for c in centroids:
         if c.count == 0:
             return True

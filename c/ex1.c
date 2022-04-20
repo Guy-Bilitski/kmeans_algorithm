@@ -23,6 +23,7 @@ int main(int argc, char **argv)
     char *output_filename, *input_filename;
     int k, maxiter, dim, initialize_error, error;
     double **centroids, **new_centroids, **temp;
+    int i,j;
 
     k = atoi(argv[1]);
     input_filename = argv[argc-2];
@@ -41,7 +42,8 @@ int main(int argc, char **argv)
 
     centroids = calloc(k, sizeof(double *));
     new_centroids = calloc(k, sizeof(double *));
-    for (int i=0; i < k; i++) {
+    
+    for (i=0; i < k; i++) {
         centroids[i] = calloc(dim + 1, sizeof(double));
         new_centroids[i] = calloc(dim + 1, sizeof(double));
     }
@@ -54,7 +56,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    for (int i=0; i < maxiter; i++) {
+    for (i=0; i < maxiter; i++) {
         error = kmeans_iteration(k, dim, input_filename, centroids, new_centroids);
         if (error || checkForZeros(k, dim, new_centroids)){
             printf("An Error Has Occurred");
@@ -72,7 +74,7 @@ int main(int argc, char **argv)
 
     write_result(k, dim, output_filename, centroids);
     
-    for (int i=0; i < k; i++) {
+    for (i=0; i < k; i++) {
         free(centroids[i]);
         free(new_centroids[i]);
     }
@@ -86,9 +88,11 @@ double max_distance_between_centroids(int k, int dim, double **old_centroids, do
     double max_value = DBL_MIN;
     double current_value;
 
-    for (int i=0; i < k; i++) {
+    int i;
+    for (i=0; i < k; i++) {
         current_value = 0;
-        for (int j=0; j < dim; j++) {
+        int j;
+        for (j=0; j < dim; j++) {
             current_value += pow((old_centroids[i][j] / old_centroids[i][dim]) - (new_centroids[i][j] / new_centroids[i][dim]), 2);
         }
         if (current_value > max_value) {
@@ -113,7 +117,8 @@ int kmeans_iteration(int k, int dim, char *input_file, double **centroids, doubl
     }
 
     while (!feof(ifp)) {
-        for (int j=0; j < dim; j++) {
+        int j;
+        for (j=0; j < dim; j++) {
             end = fscanf(ifp, "%lf%c", &vector[j], &c);
         }
         if (end != 2){
@@ -122,7 +127,7 @@ int kmeans_iteration(int k, int dim, char *input_file, double **centroids, doubl
 
         closet_centroid_index = find_closest_centroid(k, dim, vector, centroids);
 
-        for (int j = 0; j < dim; j++) {
+        for (j = 0; j < dim; j++) {
             new_centroids[closet_centroid_index][j] += vector[j];
         }
 
@@ -134,7 +139,8 @@ int kmeans_iteration(int k, int dim, char *input_file, double **centroids, doubl
 }
 
 int checkForZeros(int k, int dim, double **centroids){
-    for (int i = 0; i < k; i++) {
+    int i;
+    for (i = 0; i < k; i++) {
         if (centroids[i][dim] == 0){
             return 1;
         }
@@ -147,9 +153,10 @@ int find_closest_centroid(int k, int dim, double *vector, double **centroids) {
     double current_value = 0;
     int closest_index = -1;
 
-    for (int i = 0; i < k; i++) {
+    int i,j;
+    for (i = 0; i < k; i++) {
         current_value = 0;
-        for (int j=0; j < dim; j++) {
+        for (j=0; j < dim; j++) {
             current_value += pow((vector[j] - (centroids[i][j] / centroids[i][dim])), 2);
         }
         if (current_value < closest_value) {
@@ -164,15 +171,15 @@ int find_closest_centroid(int k, int dim, double *vector, double **centroids) {
 
 int initialize_centroids(int k, int dim, char *input_file, double **datapoints) {
     FILE *ifp;
+    int i,j;
     char c;
     ifp = fopen(input_file, "r");
     if (ifp == NULL) {
         return 1;
     }
 
-    for (int i = 0; i < k; i++) {
-        
-        for (int j = 0; j < dim; j++) {
+    for (i = 0; i < k; i++) {
+        for (j = 0; j < dim; j++) {
             fscanf(ifp, "%lf%c", &datapoints[i][j],&c);
         }
         datapoints[i][dim] = 1;
@@ -181,9 +188,9 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
     rewind(ifp);
     double check;
     int fsc;
-    for (int i = k; i < INT_MAX; i++) {
+    for (i = k; i < INT_MAX; i++) {
         
-        for (int j = 0; j < dim; j++) {
+        for (j = 0; j < dim; j++) {
             fsc = fscanf(ifp, "%lf%c", &check,&c);
             if (fsc < 2){
                 break;
@@ -207,8 +214,9 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
 }
 
 void initarray(int dim, int k, double **arr){
-    for (int i=0; i<k; i++){
-        for (int j=0; j<dim+1; j++){
+    int i,j;
+    for (i=0; i<k; i++){
+        for (j=0; j<dim+1; j++){
             arr[i][j]=0;
         }
     }
@@ -241,12 +249,13 @@ int get_dimension(char *input_file) {
 
 int write_result(int k, int dim, char *outname, double **data){
     FILE *ofp;
+    int i,j;
     ofp = fopen(outname, "w");
     if (ofp == NULL) {
         return -1;
     }
-    for (int i = 0; i<k; i++){
-        for (int j=0; j<dim; j++){
+    for (i = 0; i<k; i++){
+        for (j=0; j<dim; j++){
             fprintf(ofp, "%.4f",data[i][j]/data[i][dim]);
             if (j < dim-1){
                 fprintf(ofp, ",");
@@ -260,8 +269,9 @@ int write_result(int k, int dim, char *outname, double **data){
 }
 
 void printcentroids(int k, int d, double **c){
-    for (int i=0; i<k; i++){
-        for (int j=0; j<d; j++){
+    int i,j;
+    for (i=0; i<k; i++){
+        for (j=0; j<d; j++){
             printf("%.4f,", c[i][j]);
         }
         printf(" numOfVecs=%.4f\n", c[i][d]);
