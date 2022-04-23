@@ -190,6 +190,7 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
     int i,j;
     char c;
     double check;
+    int fsc;
     ifp = fopen(input_file, "r");
     if (ifp == NULL) {
         return 1;
@@ -203,7 +204,6 @@ int initialize_centroids(int k, int dim, char *input_file, double **datapoints) 
     }
 
     rewind(ifp);
-    int fsc;
     for (i = k; i < INT_MAX; i++) {
         
         for (j = 0; j < dim; j++) {
